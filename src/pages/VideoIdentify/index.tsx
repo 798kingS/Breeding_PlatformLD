@@ -48,7 +48,7 @@ const VideoIdentify: React.FC = () => {
         const mock = generateMockFromVideo(fileObj as File);
         setResult(mock);
         setLoading(false);
-      }, 2000);
+      }, 7200);
     }
   };
 

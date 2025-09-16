@@ -83,6 +83,60 @@ export default [
     ],
   },
   {
+    name: '智能AI',
+    icon: 'robot',
+    path: '/smart-ai',
+    routes: [
+      {
+        name: 'AI识别',
+        icon: 'camera',
+        path: 'ai-detect',
+        routes: [
+          {
+            name: '植物生长状况识别',
+            path: 'image-identify',
+            component: './ImageIdentify',
+
+          },
+          {
+            name: '视频识别',
+            icon: 'videoCamera',
+            path: 'video-identify',
+            component: './VideoIdentify',
+
+          },
+          {
+            name: '病虫害识别',
+            path: 'pest-disease',
+            component: './PestDisease',
+
+          },
+        ],
+      },
+      {
+        name: 'AI助手',
+        icon: 'robot',
+        path: 'ai',
+        routes: [
+          {
+            name: 'AI问答',
+            icon: 'robot',
+            path: 'ai-chat',
+            component: './AI/AIChat',
+
+          },
+          {
+            name: '问答记录',
+            icon: 'HistoryOutlined',
+            path: 'chat-history',
+            component: './AI/ChatHistory',
+
+          },
+        ],
+      },
+    ],
+  },
+  {
     name: '引种管理',
     icon: 'table',
     path: '/introduction',
@@ -141,41 +195,7 @@ export default [
       },
     ],
   },
-  {
-    name: 'AI助手',
-    icon: 'robot',
-    path: '/AI',
-    routes: [
-      {
-        name: 'AI问答',
-        icon: 'robot',
-        path: '/AI/ai-chat',
-        component: './AI/AIChat',
-
-      },
-      {
-        name: '问答记录',
-        icon: 'HistoryOutlined',
-        path: '/AI/chat-history',
-        component: './AI/ChatHistory',
-
-      },
-    ],
-  },
-  {
-    name: '图片识别',
-    icon: 'camera',
-    path: '/image-identify',
-    component: './ImageIdentify',
-
-  },
-  {
-    name: '视频识别',
-    icon: 'videoCamera',
-    path: '/video-identify',
-    component: './VideoIdentify',
-
-  },
+  
   {
     path: '/',
     redirect: '/welcome',

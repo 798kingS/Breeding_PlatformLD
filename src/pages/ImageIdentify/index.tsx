@@ -1,16 +1,16 @@
-import React, { useMemo, useState } from 'react';
-import { Upload, Button, Image, Spin, Typography, message, Descriptions, Tag, Progress, Divider, Alert } from 'antd';
+import React, { useState } from 'react';
+import { Upload, Button, Image, Spin, message, Descriptions, Tag, Progress, Divider, Alert } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import './index.less';
 
-const { Paragraph } = Typography;
+// const { Paragraph } = Typography;
 
 const ImageIdentify: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<any | null>(null);
 
-  // 生成前端模拟的生长状况结果
+  // 生成前端模拟的生长状况结果（不含病虫害检测）
   const generateMockResult = (file: File) => {
     const seed = (file.size % 97) + 1; // 基于文件大小的简单“种子”
     const rand = (min: number, max: number) => {
@@ -21,8 +21,6 @@ const ImageIdentify: React.FC = () => {
     const stage = stageList[(seed % stageList.length)];
     const vigor = rand(60, 95);
     const leafHealth = rand(70, 98);
-    const diseaseRisk = rand(0, 30);
-    const pestRisk = rand(0, 25);
     const flowerSet = rand(50, 95);
     const nitrogen = rand(0.7, 1.3); // 1 为适宜
     const phosphorus = rand(0.7, 1.3);
@@ -30,14 +28,12 @@ const ImageIdentify: React.FC = () => {
     const waterAdequacy = rand(60, 100);
     const tempStress = rand(0, 20);
     const comprehensive = Math.min(100, Math.round(
-      vigor * 0.25 + leafHealth * 0.25 + (100 - diseaseRisk) * 0.15 + (100 - pestRisk) * 0.1 + flowerSet * 0.15 + waterAdequacy * 0.1
+      vigor * 0.3 + leafHealth * 0.3 + flowerSet * 0.2 + waterAdequacy * 0.2
     ));
 
-    const nutrientText = (v: number) => (v < 0.9 ? '偏缺' : v > 1.1 ? '偏高' : '适宜');
+    // const nutrientText = (v: number) => (v < 0.9 ? '偏缺' : v > 1.1 ? '偏高' : '适宜');
     const advice: string[] = [];
     if (waterAdequacy < 75) advice.push('适当补灌，保持土壤见干见湿');
-    if (diseaseRisk > 18) advice.push('注意通风与干燥，及时清理病残叶');
-    if (pestRisk > 15) advice.push('开展虫情监测，可用黄板或诱捕灯');
     if (nitrogen < 0.9) advice.push('追施含氮水溶肥，促进营养生长');
     if (potassium < 0.9) advice.push('增施钾肥，提升坐果与糖度');
     if (tempStress > 12) advice.push('采取遮阳/增温措施，降低温度胁迫');
@@ -47,8 +43,6 @@ const ImageIdentify: React.FC = () => {
       stage,
       vigor,
       leafHealth,
-      diseaseRisk,
-      pestRisk,
       flowerSet,
       nitrogen,
       phosphorus,
@@ -74,17 +68,17 @@ const ImageIdentify: React.FC = () => {
         setResult(mock);
         setLoading(false);
         message.success('检测完成');
-      }, 1800);
+      }, 3600);
     }
   };
 
-  const riskColor = (v: number) => (v < 10 ? 'green' : v < 20 ? 'orange' : 'red');
   const scoreColor = (v: number) => (v >= 85 ? 'green' : v >= 70 ? 'orange' : 'red');
+  const stressColor = (v: number) => (v < 8 ? 'green' : v < 15 ? 'orange' : 'red');
 
   return (
     <div className="image-identify-container">
       <div className="image-identify-left">
-        <div className="image-identify-title">图片智能检测</div>
+        <div className="image-identify-title">植物生长状况识别</div>
         <div className="image-identify-upload">
           <Upload
             accept="image/*"
@@ -120,7 +114,7 @@ const ImageIdentify: React.FC = () => {
         <Spin spinning={loading} style={{ width: '100%' }}>
           {result ? (
             <div className="image-identify-ocr">
-              <b style={{ color: '#1976d2', fontSize: 18, marginBottom: 12, display: 'block' }}>检测结果</b>
+              <b style={{ color: '#1976d2', fontSize: 18, marginBottom: 12, display: 'block' }}>生长状况检测结果</b>
 
               <Alert
                 type="info"
@@ -137,22 +131,15 @@ const ImageIdentify: React.FC = () => {
               <Descriptions bordered size="middle" column={1} style={{ background: '#fff' }}>
                 <Descriptions.Item label="长势"><Progress percent={Math.round(result.vigor)} status="active" /></Descriptions.Item>
                 <Descriptions.Item label="叶片健康度"><Progress percent={Math.round(result.leafHealth)} strokeColor="#52c41a" /></Descriptions.Item>
-                <Descriptions.Item label="病害风险">
-                  <Tag color={riskColor(result.diseaseRisk)}>{result.diseaseRisk}%</Tag>
-                  <span style={{ marginLeft: 8, color: '#666' }}>值越低越好</span>
-                </Descriptions.Item>
-                <Descriptions.Item label="虫害风险">
-                  <Tag color={riskColor(result.pestRisk)}>{result.pestRisk}%</Tag>
-                  <span style={{ marginLeft: 8, color: '#666' }}>值越低越好</span>
-                </Descriptions.Item>
+                
                 <Descriptions.Item label="开花/坐果"><Progress percent={Math.round(result.flowerSet)} strokeColor="#faad14" /></Descriptions.Item>
                 <Descriptions.Item label="营养诊断">
                   氮：<Tag color={result.nitrogen < 0.9 ? 'red' : result.nitrogen > 1.1 ? 'orange' : 'green'}>{result.nitrogen.toFixed(2)}（{result.nitrogen < 0.9 ? '偏缺' : result.nitrogen > 1.1 ? '偏高' : '适宜'}）</Tag>
                   磷：<Tag color={result.phosphorus < 0.9 ? 'red' : result.phosphorus > 1.1 ? 'orange' : 'green'}>{result.phosphorus.toFixed(2)}（{result.phosphorus < 0.9 ? '偏缺' : result.phosphorus > 1.1 ? '偏高' : '适宜'}）</Tag>
-                  钾：<Tag color={result.potassium < 0.9 ? 'red' : result.potassium > 1.1 ? 'orange' : 'green'}>{result.potassium.toFixed(2)}（{result.potassium < 0.9 ? '偏缺' : result.potassium > 1.1 ? 'orange : ' : '适宜'}）</Tag>
+                  钾：<Tag color={result.potassium < 0.9 ? 'red' : result.potassium > 1.1 ? 'orange' : 'green'}>{result.potassium.toFixed(2)}（{result.potassium < 0.9 ? '偏缺' : result.potassium > 1.1 ? '偏高' : '适宜'}）</Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="水分充足度"><Progress percent={Math.round(result.waterAdequacy)} strokeColor="#1890ff" /></Descriptions.Item>
-                <Descriptions.Item label="温度胁迫"><Tag color={riskColor(result.tempStress)}>{result.tempStress}</Tag></Descriptions.Item>
+                <Descriptions.Item label="温度胁迫"><Tag color={stressColor(result.tempStress)}>{result.tempStress}</Tag></Descriptions.Item>
               </Descriptions>
 
               <Divider style={{ margin: '16px 0' }} />

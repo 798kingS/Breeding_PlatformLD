@@ -402,7 +402,7 @@ const Welcome: React.FC = () => {
                   objectFit: 'cover'
                 }}
                 controls
-                poster="/video-poster.jpg"
+                poster="https://breed-1258140596.cos.ap-shanghai.myqcloud.com/Breeding%20Platform/vediopic.png"
                 src="https://breed-1258140596.cos.ap-shanghai.myqcloud.com/video/xc.mp4"
               >
                 您的浏览器不支持视频播放

@@ -162,8 +162,8 @@ export async function importExcel(formData: FormData) {
 }
 
 // Deepseek API配置
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+const DEEPSEEK_API_KEY = 'sk-16176635cae049b186cd9f0b4ebfe352';
 
 export async function queryAI(messages: { role: string; content: string }[]) {
   try {

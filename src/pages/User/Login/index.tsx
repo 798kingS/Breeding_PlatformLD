@@ -307,7 +307,7 @@ const Login: React.FC = () => {
         type,
       });
 
-      console.log(response);
+      // console.log(response);
 
 
       if (response.token) {

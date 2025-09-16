@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Input, Button, List, Avatar, message } from 'antd';
-import { SendOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, List, message, theme } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
 import { useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
 import ReactMarkdown from 'react-markdown';
@@ -27,13 +27,21 @@ interface CodeProps {
   children?: React.ReactNode;
 }
 
-const AIChat: React.FC = () => {
+interface AIChatProps {
+  embedded?: boolean;
+  hasInitialized?: boolean;
+}
+
+const AIChat: React.FC<AIChatProps> = ({ embedded, hasInitialized }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const isComposingRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const sessionId = (location.state as LocationState)?.sessionId;
+  const { token } = theme.useToken();
 
   // 自动滚动到底部
   // const scrollToBottom = () => {
@@ -53,6 +61,35 @@ const AIChat: React.FC = () => {
       }
     }
   }, [sessionId]);
+
+  useEffect(() => {
+    // 首次打开悬浮窗时，添加欢迎消息（逐字显示）
+    if (hasInitialized && messages.length === 0 && !sessionId) {
+      const welcomeText = '您好，这里是智能小助手，请问有什么可以帮到您的？';
+      const welcomeMessage: ChatMessage = {
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+      };
+      setMessages([welcomeMessage]);
+      setIsTyping(true);
+      
+      // 逐字显示效果
+      let currentIndex = 0;
+      const typeInterval = setInterval(() => {
+        if (currentIndex < welcomeText.length) {
+          setMessages(prev => [{
+            ...prev[0],
+            content: welcomeText.substring(0, currentIndex + 1)
+          }]);
+          currentIndex++;
+        } else {
+          clearInterval(typeInterval);
+          setIsTyping(false);
+        }
+      }, 50); // 每50ms显示一个字符
+    }
+  }, [hasInitialized, sessionId]);
 
   useEffect(() => {
     // scrollToBottom();
@@ -91,19 +128,18 @@ const AIChat: React.FC = () => {
 
   // 处理发送消息
   const handleSend = async () => {
-    if (!inputValue.trim()) {
-      return;
-    }
+    const text = inputRef.current?.value || '';
+    if (!text.trim()) return;
 
     const userMessage: ChatMessage = {
       role: 'user',
-      content: inputValue.trim(),
+      content: text.trim(),
       timestamp: Date.now(),
     };
 
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    setInputValue('');
+    if (inputRef.current) inputRef.current.value = '';
     setLoading(true);
 
     try {
@@ -133,9 +169,8 @@ const AIChat: React.FC = () => {
     }
   };
 
-  // 处理按下回车
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isComposingRef.current) {
       e.preventDefault();
       handleSend();
     }
@@ -170,33 +205,96 @@ const AIChat: React.FC = () => {
     );
   };
 
+  const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    if (embedded) {
+      return <>{children}</>;
+    }
+    return <PageContainer>{children}</PageContainer>;
+  };
+
   return (
-    <PageContainer>
-      <div className={styles['chat-container']}>
-        <div className={styles['message-list']}>
+    <>
+      <style>{`
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+      `}</style>
+      <ChatShell>
+        <div className={`${styles['chat-container']} ${embedded ? styles['embedded'] : ''}`}>
+        <div 
+          style={{
+            flex: 1,
+            overflow: 'auto',
+            padding: '20px',
+            backgroundColor: token.colorFillTertiary,
+          }}
+        >
           <List
             itemLayout="horizontal"
             dataSource={messages}
             renderItem={(item) => (
-              <List.Item className={`${styles['message-item']} ${styles[item.role]}`}>
+              <List.Item 
+                style={{
+                  border: 'none',
+                  padding: '8px 0',
+                  marginBottom: '16px',
+                }}
+              >
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
                     flexDirection: item.role === 'user' ? 'row-reverse' : 'row',
                     width: '100%',
+                    gap: '12px',
                   }}
                 >
-                  <Avatar
-                    icon={item.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
-                    className={`${styles.avatar} ${styles[item.role]}`}
-                  />
-                  <div className={styles['message-content']} style={{ backgroundColor: '#ffffff', color: '#333', borderRadius: '8px', padding: '12px 16px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 24,
+                      background: item.role === 'user' 
+                        ? `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`
+                        : `linear-gradient(135deg, ${token.colorSuccess} 0%, ${token.colorSuccessHover} 100%)`,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      border: '3px solid rgba(255,255,255,0.8)',
+                    }}
+                  >
+                    {item.role === 'user' ? '👤' : '🤖'}
+                  </div>
+                  <div 
+                    style={{ 
+                      backgroundColor: item.role === 'user' ? `${token.colorPrimaryBg}` : `${token.colorFillSecondary}`,
+                      color: '#333', 
+                      borderRadius: '16px', 
+                      padding: '16px 20px', 
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                      border: `1px solid ${item.role === 'user' ? `${token.colorPrimaryBorder}` : `${token.colorBorder}`}`,
+                      maxWidth: '70%',
+                      position: 'relative',
+                    }}
+                  >
                     {item.role === 'user' ? (
                       <div style={{ whiteSpace: 'pre-wrap' }}>{item.content}</div>
                     ) : (
                       <div className={`${styles['markdown-content']} markdown-body`}>
                         {renderMessageContent(item.content)}
+                        {isTyping && item === messages[messages.length - 1] && (
+                          <span style={{ 
+                            display: 'inline-block',
+                            width: '8px',
+                            height: '16px',
+                            backgroundColor: '#1890ff',
+                            marginLeft: '2px',
+                            animation: 'blink 1s infinite'
+                          }} />
+                        )}
                       </div>
                     )}
                   </div>
@@ -207,26 +305,68 @@ const AIChat: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className={styles['input-area']}>
-          <Input.TextArea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
+        <div 
+          style={{
+            padding: '20px',
+            backgroundColor: token.colorFillQuaternary,
+            borderTop: `1px solid ${token.colorBorder}`,
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-end',
+          }}
+        >
+          <textarea
+            ref={inputRef}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => (isComposingRef.current = true)}
+            onCompositionEnd={() => (isComposingRef.current = false)}
             placeholder="请输入您的问题..."
-            autoSize={{ minRows: 2, maxRows: 4 }}
-            style={{ flex: 1 }}
+            rows={3}
+            style={{ 
+              flex: 1, 
+              resize: 'vertical', 
+              borderRadius: '20px', 
+              padding: '16px 20px', 
+              border: `2px solid ${token.colorBorder}`, 
+              outline: 'none',
+              fontSize: '14px',
+              lineHeight: '1.5',
+              backgroundColor: token.colorBgContainer,
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = token.colorPrimary;
+              e.target.style.boxShadow = `0 4px 16px ${token.colorPrimary}25`;
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = token.colorBorder;
+              e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+            }}
+            autoFocus
+            autoComplete="off"
           />
           <Button
             type="primary"
             icon={<SendOutlined />}
             onClick={handleSend}
             loading={loading}
+            style={{
+              height: '48px',
+              borderRadius: '24px',
+              padding: '0 24px',
+              fontSize: '14px',
+              fontWeight: 500,
+              boxShadow: `0 4px 12px ${token.colorPrimary}4D`,
+              border: 'none',
+            }}
           >
             发送
           </Button>
         </div>
       </div>
-    </PageContainer>
+    </ChatShell>
+    </>
   );
 };
 
