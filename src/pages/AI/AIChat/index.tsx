@@ -65,7 +65,7 @@ const AIChat: React.FC<AIChatProps> = ({ embedded, hasInitialized }) => {
   useEffect(() => {
     // 首次打开悬浮窗时，添加欢迎消息（逐字显示）
     if (hasInitialized && messages.length === 0 && !sessionId) {
-      const welcomeText = '您好，这里是智能小助手，请问有什么可以帮到您的？';
+      const welcomeText = '您好，这里是育小星，请问有什么可以帮到您的？';
       const welcomeMessage: ChatMessage = {
         role: 'assistant',
         content: '',
@@ -261,12 +261,25 @@ const AIChat: React.FC<AIChatProps> = ({ embedded, hasInitialized }) => {
                       fontSize: 24,
                       background: item.role === 'user' 
                         ? `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`
-                        : `linear-gradient(135deg, ${token.colorSuccess} 0%, ${token.colorSuccessHover} 100%)`,
+                        : `linear-gradient(135deg, #389e0d 0%,rgb(24, 58, 7) 100%)`,
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                       border: '3px solid rgba(255,255,255,0.8)',
                     }}
                   >
-                    {item.role === 'user' ? '👤' : '🤖'}
+                    {item.role === 'user' ? (
+                      '👤'
+                    ) : (
+                      <img 
+                        src='https://breed-1258140596.cos.ap-shanghai.myqcloud.com/Breeding%20Platform/ai%E5%8A%A9%E6%89%8B.png'
+                        alt="育小星"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          objectFit: 'contain',
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                        }}
+                      />
+                    )}
                   </div>
                   <div 
                     style={{ 

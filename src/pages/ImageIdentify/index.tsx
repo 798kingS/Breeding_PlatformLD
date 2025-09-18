@@ -78,7 +78,7 @@ const ImageIdentify: React.FC = () => {
   return (
     <div className="image-identify-container">
       <div className="image-identify-left">
-        <div className="image-identify-title">植物生长状况识别</div>
+        <div className="image-identify-title">智苗慧眼</div>
         <div className="image-identify-upload">
           <Upload
             accept="image/*"

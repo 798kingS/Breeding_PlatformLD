@@ -16,7 +16,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Breeding Platform',
+  title: '深溯育种云平台',
   pwa: true,
   logo: 'https://breed-1258140596.cos.ap-shanghai.myqcloud.com/Breeding%20Platform/logo.png',
   iconfontUrl: '',

@@ -10,8 +10,8 @@ const Footer: React.FC = () => {
       }}
       links={[
         {
-          key: 'Breeding Platform',
-          title: 'Breeding Platform',
+          key: '深溯育种云平台',
+          title: '深溯育种云平台',
           href: 'https://mp.weixin.qq.com/s/P6-1IkzYlDRi_Qxylx_94Q',
           blankTarget: true,
         },

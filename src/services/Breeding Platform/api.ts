@@ -163,7 +163,7 @@ export async function importExcel(formData: FormData) {
 
 // Deepseek API配置
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-const DEEPSEEK_API_KEY = 'sk-16176635cae049b186cd9f0b4ebfe352';
+const DEEPSEEK_API_KEY = 'sk-04fb3dc9fa9c4fd6a0afad0223a55926';
 
 export async function queryAI(messages: { role: string; content: string }[]) {
   try {
@@ -171,13 +171,13 @@ export async function queryAI(messages: { role: string; content: string }[]) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer sk-16176635cae049b186cd9f0b4ebfe352`,
+        'Authorization': `Bearer sk-04fb3dc9fa9c4fd6a0afad0223a55926`,
       },
       body: JSON.stringify({
         model: 'deepseek-reasoner',
         messages: messages,
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 6000,
       }),
     });
 

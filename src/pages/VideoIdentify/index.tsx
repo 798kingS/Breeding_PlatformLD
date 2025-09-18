@@ -58,7 +58,7 @@ const VideoIdentify: React.FC = () => {
   return (
     <div style={{ display: 'flex', gap: 24, padding: 16 }}>
       <div>
-        <div style={{ marginBottom: 12, fontSize: 18, fontWeight: 500 }}>视频智能检测</div>
+        <div style={{ marginBottom: 12, fontSize: 18, fontWeight: 500 }}>病虫害影踪</div>
         <Upload
           accept="video/*"
           showUploadList={false}
@@ -82,7 +82,7 @@ const VideoIdentify: React.FC = () => {
         <Spin spinning={loading}>
           {result ? (
             <div>
-              <b style={{ color: '#1976d2', fontSize: 18, marginBottom: 12, display: 'block' }}>群体生长状况</b>
+              <b style={{ color: '#1976d2', fontSize: 18, marginBottom: 12, display: 'block' }}>群体病虫害状况</b>
               <Alert
                 type="info"
                 showIcon

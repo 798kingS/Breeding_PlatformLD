@@ -23,6 +23,26 @@ export default [
     ],
   },
   {
+    path: '/account',
+    name: '账号',
+    icon: 'user',
+    hideInMenu: true,
+    routes: [
+      {
+        name: '个人中心',
+        path: '/account/center',
+        component: './Account/Center',
+        hideInMenu: true,
+      },
+      {
+        name: '个人设置',
+        path: '/account/settings',
+        component: './Account/Settings',
+        hideInMenu: true,
+      },
+    ],
+  },
+  {
     path: '/welcome',
     name: '欢迎',
     icon: 'smile',
@@ -83,50 +103,50 @@ export default [
     ],
   },
   {
-    name: '智能AI',
+    name: '智能育小星',
     icon: 'robot',
     path: '/smart-ai',
     routes: [
       {
-        name: 'AI识别',
+        name: '小星识别',
         icon: 'camera',
         path: 'ai-detect',
         routes: [
           {
-            name: '植物生长状况识别',
+            name: '智苗慧眼',
             path: 'image-identify',
             component: './ImageIdentify',
 
           },
           {
-            name: '视频识别',
+            name: '病虫害图析',
+            path: 'pest-disease',
+            component: './PestDisease',
+
+          },
+          {
+            name: '病虫害影踪',
             icon: 'videoCamera',
             path: 'video-identify',
             component: './VideoIdentify',
 
           },
-          {
-            name: '病虫害识别',
-            path: 'pest-disease',
-            component: './PestDisease',
-
-          },
         ],
       },
       {
-        name: 'AI助手',
+        name: 'AI小助手',
         icon: 'robot',
         path: 'ai',
         routes: [
           {
-            name: 'AI问答',
+            name: '育小星',
             icon: 'robot',
             path: 'ai-chat',
             component: './AI/AIChat',
 
           },
           {
-            name: '问答记录',
+            name: '历史记录',
             icon: 'HistoryOutlined',
             path: 'chat-history',
             component: './AI/ChatHistory',

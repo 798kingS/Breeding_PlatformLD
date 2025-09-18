@@ -330,12 +330,12 @@ const Login: React.FC = () => {
           ...s,
           currentUser: {
             name: response.username || values.username || 'User',
-            avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+            avatar: 'https://breed-1258140596.cos.ap-shanghai.myqcloud.com/%E7%A7%8D%E8%B4%A8%E8%B5%84%E6%BA%90/tx.png',
             userid: response.id?.toString() || '00000002',
             email: '2104170424@qq.com',
             signature: '专注种植，用心培育',
             title: '种植专家',
-            group: '育种平台－种植部门',
+            group: '育种平台－开发部门',
             tags: [
               {
                 key: '0',
@@ -430,7 +430,7 @@ const Login: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src="https://breed-1258140596.cos.ap-shanghai.myqcloud.com/Breeding%20Platform/logo.png" />}
-          title="Breeding Platform"
+          title="深溯育种云平台"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,

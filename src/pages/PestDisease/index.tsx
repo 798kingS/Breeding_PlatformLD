@@ -63,7 +63,7 @@ const PestDisease: React.FC = () => {
   return (
     <div className="image-identify-container">
       <div className="image-identify-left">
-        <div className="image-identify-title">病虫害识别</div>
+        <div className="image-identify-title">病虫害图析</div>
         <div className="image-identify-upload">
           <Upload
             accept="image/*"
