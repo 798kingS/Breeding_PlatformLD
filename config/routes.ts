@@ -80,18 +80,18 @@ export default [
         component: './TableList',
 
       },
+     {
+        name: '播种计划表',
+        icon: 'fileSearch',
+        path: '/germplasm/sowing-records',
+        component: './SowingRecords',
+
+      },
       {
         name: '留种记录',
         icon: 'seedling',
         path: '/germplasm/saved-seeds',
         component: './SavedSeeds',
-
-      },
-      {
-        name: '播种计划表',
-        icon: 'fileSearch',
-        path: '/germplasm/sowing-records',
-        component: './SowingRecords',
 
       },
       {
