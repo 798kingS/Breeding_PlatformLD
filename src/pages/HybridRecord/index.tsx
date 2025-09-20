@@ -61,7 +61,7 @@ const HybridRecord: React.FC = () => {
       });
       if (!response.ok) throw new Error('网络错误');
       const result = await response.json();
-      console.log('获取杂交记录:', result);
+      // console.log('获取杂交记录:', result);
       if (Array.isArray(result.data)) {
         // 保证每条数据的key唯一
         const withKey = result.data.map((item: any, idx: number) => ({
@@ -473,7 +473,7 @@ const HybridRecord: React.FC = () => {
         }}
         confirmLoading={uploading}
         width={600}
-        bodyStyle={{ padding: '24px' }}
+        styles={{ body: { padding: '24px' } }}
       >
         <div style={{ background: '#fafafa', padding: '24px', borderRadius: '8px', marginBottom: '24px' }}>
           <Upload

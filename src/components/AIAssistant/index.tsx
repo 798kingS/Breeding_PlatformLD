@@ -275,7 +275,7 @@ const AIAssistant: React.FC = () => {
           },
           body: { padding: 0 },
         }}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
         destroyOnClose
       >
         <div

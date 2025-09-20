@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, Row, Col, Statistic, Typography, Space, Button } from 'antd';
+import { Card, Row, Col, Statistic, Typography, Space, Button, message } from 'antd';
 import React, { useEffect } from 'react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
@@ -262,11 +262,11 @@ const Welcome: React.FC = () => {
     ...cardStyle,
     padding: '24px',
     background: '#FFFFFF',
-    '.ant-card-head': {
+    '& .ant-card-head': {
       borderBottom: 'none',
       padding: '0 0 16px 0'
     },
-    '.ant-card-head-title': {
+    '& .ant-card-head-title': {
       fontSize: '18px',
       fontWeight: '600'
     }
@@ -486,7 +486,7 @@ const Welcome: React.FC = () => {
 
         <Row gutter={[24, 24]}>
           <Col span={6}>
-            <Card style={statisticCardStyle} hoverable bodyStyle={{ padding: 0 }}>
+            <Card style={statisticCardStyle} hoverable styles={{ body: { padding: 0 } }}>
               <Statistic 
                 title={<span style={{ fontSize: '18px', color: '#1B5E20', fontWeight: '500' }}>品种总数</span>}
                 value={156} 
@@ -503,7 +503,7 @@ const Welcome: React.FC = () => {
             </Card>
           </Col>
           <Col span={6}>
-            <Card style={statisticCardStyle} hoverable bodyStyle={{ padding: 0 }}>
+            <Card style={statisticCardStyle} hoverable styles={{ body: { padding: 0 } }}>
               <Statistic 
                 title={<span style={{ fontSize: '18px', color: '#1B5E20', fontWeight: '500' }}>本年度新增</span>}
                 value={35} 
@@ -520,7 +520,7 @@ const Welcome: React.FC = () => {
             </Card>
           </Col>
           <Col span={6}>
-            <Card style={statisticCardStyle} hoverable bodyStyle={{ padding: 0 }}>
+            <Card style={statisticCardStyle} hoverable styles={{ body: { padding: 0 } }}>
               <Statistic 
                 title={<span style={{ fontSize: '18px', color: '#1B5E20', fontWeight: '500' }}>留种数量</span>}
                 value={89} 
@@ -537,7 +537,7 @@ const Welcome: React.FC = () => {
             </Card>
           </Col>
           <Col span={6}>
-            <Card style={statisticCardStyle} hoverable bodyStyle={{ padding: 0 }}>
+            <Card style={statisticCardStyle} hoverable styles={{ body: { padding: 0 } }}>
               <Statistic 
                 title={<span style={{ fontSize: '18px', color: '#1B5E20', fontWeight: '500' }}>成功率</span>}
                 value={92.8} 
@@ -878,7 +878,7 @@ const Welcome: React.FC = () => {
                 <Card 
                   style={{ ...cardStyle, background: '#F9FBE7' }} 
                   hoverable
-                  bodyStyle={{ height: '200px' }}
+                  styles={{ body: { height: '200px' } }}
                 >
                   <Title level={4} style={{ color: '#2E7D32' }}>智能数据管理</Title>
                   <Paragraph style={{ fontSize: '14px', color: '#1B5E20' }}>
@@ -891,7 +891,7 @@ const Welcome: React.FC = () => {
                 <Card 
                   style={{ ...cardStyle, background: '#F1F8E9' }} 
                   hoverable
-                  bodyStyle={{ height: '200px' }}
+                  styles={{ body: { height: '200px' } }}
                 >
                   <Title level={4} style={{ color: '#2E7D32' }}>全程留种追踪</Title>
                   <Paragraph style={{ fontSize: '14px', color: '#1B5E20' }}>
@@ -904,7 +904,7 @@ const Welcome: React.FC = () => {
                 <Card 
                   style={{ ...cardStyle, background: '#E8F5E9' }} 
                   hoverable
-                  bodyStyle={{ height: '200px' }}
+                  styles={{ body: { height: '200px' } }}
                 >
                   <Title level={4} style={{ color: '#2E7D32' }}>育种分析预测</Title>
                   <Paragraph style={{ fontSize: '14px', color: '#1B5E20' }}>

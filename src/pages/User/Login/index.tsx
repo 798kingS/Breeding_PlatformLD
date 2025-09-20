@@ -5,9 +5,9 @@ import {
   AlipayCircleOutlined,
   LockOutlined,
   MobileOutlined,
-  TaobaoCircleOutlined,
   UserOutlined,
-  WeiboCircleOutlined,
+  QqOutlined,
+  WechatOutlined,
 } from '@ant-design/icons';
 import {
   LoginForm,
@@ -18,10 +18,13 @@ import {
 import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
 import { Alert, message, Tabs, Modal, Form, Input, Button } from 'antd';
 import Settings from '../../../../config/defaultSettings';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { createStyles } from 'antd-style';
-import { login, register } from '@/services/Breeding Platform/api';
+import { login, register, qqLogin, wechatLogin, alipayLogin } from '@/services/Breeding Platform/api';
+import { startQQLogin, handleQQLoginCallback } from '@/utils/qqLogin';
+import { startWechatLogin, handleWechatLoginCallback, isWechatLoginCallback } from '@/utils/wechatLogin';
+import { startAlipayLogin, handleAlipayLoginCallback, isAlipayLoginCallback } from '@/utils/alipayLogin';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -31,9 +34,46 @@ const useStyles = createStyles(({ token }) => {
       fontSize: '24px',
       verticalAlign: 'middle',
       cursor: 'pointer',
-      transition: 'color 0.3s',
+      transition: 'all 0.3s',
       '&:hover': {
         color: token.colorPrimaryActive,
+        transform: 'scale(1.1)',
+      },
+    },
+    qqIcon: {
+      marginLeft: '8px',
+      color: '#12B7F5',
+      fontSize: '24px',
+      verticalAlign: 'middle',
+      cursor: 'pointer',
+      transition: 'all 0.3s',
+      '&:hover': {
+        color: '#0A9BD9',
+        transform: 'scale(1.1)',
+      },
+    },
+    wechatIcon: {
+      marginLeft: '8px',
+      color: '#07C160',
+      fontSize: '24px',
+      verticalAlign: 'middle',
+      cursor: 'pointer',
+      transition: 'all 0.3s',
+      '&:hover': {
+        color: '#06AD56',
+        transform: 'scale(1.1)',
+      },
+    },
+    alipayIcon: {
+      marginLeft: '8px',
+      color: '#1677FF',
+      fontSize: '24px',
+      verticalAlign: 'middle',
+      cursor: 'pointer',
+      transition: 'all 0.3s',
+      '&:hover': {
+        color: '#0958D9',
+        transform: 'scale(1.1)',
       },
     },
     lang: {
@@ -73,11 +113,42 @@ const useStyles = createStyles(({ token }) => {
 const ActionIcons = () => {
   const { styles } = useStyles();
 
+  const handleThirdPartyLogin = (type: string) => {
+    switch (type) {
+      case 'qq':
+        startQQLogin();
+        break;
+      case 'wechat':
+        startWechatLogin();
+        break;
+      case 'alipay':
+        startAlipayLogin();
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={styles.action} />
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.action} />
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.action} />
+      <QqOutlined 
+        key="QqOutlined" 
+        className={styles.qqIcon} 
+        title="QQ登录"
+        onClick={() => handleThirdPartyLogin('qq')}
+      />
+      <WechatOutlined 
+        key="WechatOutlined" 
+        className={styles.wechatIcon} 
+        title="微信登录"
+        onClick={() => handleThirdPartyLogin('wechat')}
+      />
+      <AlipayCircleOutlined 
+        key="AlipayCircleOutlined" 
+        className={styles.alipayIcon} 
+        title="支付宝登录"
+        onClick={() => handleThirdPartyLogin('alipay')}
+      />
     </>
   );
 };
@@ -299,6 +370,270 @@ const Login: React.FC = () => {
   const { setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
   const intl = useIntl();
+
+  // 处理QQ登录回调
+  useEffect(() => {
+    const handleQQCallback = async () => {
+      // 检查URL中是否包含QQ登录回调参数
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+      
+      if (code && state) {
+        try {
+          message.loading('正在处理QQ登录...', 0);
+          
+          const qqData = await handleQQLoginCallback();
+          if (qqData) {
+            // 调用后端QQ登录接口
+            const response = await qqLogin({
+              accessToken: qqData.accessToken,
+              openId: qqData.openId,
+              userInfo: qqData.userInfo,
+            });
+
+            if (response.token) {
+              localStorage.setItem('token', response.token);
+              localStorage.setItem('userId', response.id?.toString() || '');
+              localStorage.setItem('userRole', response.role || '');
+            }
+
+            setUserLoginState({
+              status: 'ok',
+              type: 'qq',
+              token: response.token,
+              id: response.id,
+              username: response.username || qqData.userInfo.nickname,
+              role: response.role
+            });
+
+            flushSync(() => {
+              setInitialState((s) => ({
+                ...s,
+                currentUser: {
+                  name: response.username || qqData.userInfo.nickname || 'QQ用户',
+                  avatar: qqData.userInfo.figureurl_qq_2 || qqData.userInfo.figureurl_qq_1 || 'https://breed-1258140596.cos.ap-shanghai.myqcloud.com/%E7%A7%8D%E8%B4%A8%E8%B5%84%E6%BA%90/tx.png',
+                  userid: response.id?.toString() || '00000002',
+                  email: 'qq@example.com',
+                  signature: '专注种植，用心培育',
+                  title: '种植专家',
+                  group: '育种平台－开发部门',
+                  tags: [
+                    {
+                      key: '0',
+                      label: '种植达人',
+                    },
+                  ],
+                  notifyCount: 5,
+                  unreadCount: 3,
+                  country: 'China',
+                  access: response.role || 'user',
+                  geographic: {
+                    province: {
+                      label: '浙江省',
+                      key: '330000',
+                    },
+                    city: {
+                      label: '湖州市',
+                      key: '330500',
+                    },
+                  },
+                  address: '湖州市吴兴区',
+                  phone: '0572-12345678',
+                },
+              }));
+            });
+
+            message.destroy();
+            message.success('QQ登录成功！');
+
+            const urlParams = new URL(window.location.href).searchParams;
+            history.push(urlParams.get('redirect') || '/');
+          } else {
+            message.destroy();
+            message.error('QQ登录失败，请重试');
+          }
+        } catch (error: any) {
+          message.destroy();
+          message.error('QQ登录失败：' + (error.message || '未知错误'));
+        }
+      }
+    };
+
+    handleQQCallback();
+  }, [setInitialState]);
+
+  // 处理微信登录回调
+  useEffect(() => {
+    const handleWechatCallback = async () => {
+      if (isWechatLoginCallback()) {
+        try {
+          message.loading('正在处理微信登录...', 0);
+          
+          const wechatData = await handleWechatLoginCallback();
+          if (wechatData) {
+            // 调用后端微信登录接口
+            const response = await wechatLogin({
+              code: wechatData.code,
+              state: wechatData.state,
+            });
+
+            if (response.token) {
+              localStorage.setItem('token', response.token);
+              localStorage.setItem('userId', response.id?.toString() || '');
+              localStorage.setItem('userRole', response.role || '');
+            }
+
+            setUserLoginState({
+              status: 'ok',
+              type: 'wechat',
+              token: response.token,
+              id: response.id,
+              username: response.username || '微信用户',
+              role: response.role
+            });
+
+            flushSync(() => {
+              setInitialState((s) => ({
+                ...s,
+                currentUser: {
+                  name: response.username || '微信用户',
+                  avatar: 'https://breed-1258140596.cos.ap-shanghai.myqcloud.com/%E7%A7%8D%E8%B4%A5%E8%B5%84%E6%BA%90/tx.png',
+                  userid: response.id?.toString() || '00000003',
+                  email: 'wechat@example.com',
+                  signature: '专注种植，用心培育',
+                  title: '种植专家',
+                  group: '育种平台－开发部门',
+                  tags: [
+                    {
+                      key: '0',
+                      label: '种植达人',
+                    },
+                  ],
+                  notifyCount: 5,
+                  unreadCount: 3,
+                  country: 'China',
+                  access: response.role || 'user',
+                  geographic: {
+                    province: {
+                      label: '浙江省',
+                      key: '330000',
+                    },
+                    city: {
+                      label: '湖州市',
+                      key: '330500',
+                    },
+                  },
+                  address: '湖州市吴兴区',
+                  phone: '0572-12345678',
+                },
+              }));
+            });
+
+            message.destroy();
+            message.success('微信登录成功！');
+
+            const urlParams = new URL(window.location.href).searchParams;
+            history.push(urlParams.get('redirect') || '/');
+          } else {
+            message.destroy();
+            message.error('微信登录失败，请重试');
+          }
+        } catch (error: any) {
+          message.destroy();
+          message.error('微信登录失败：' + (error.message || '未知错误'));
+        }
+      }
+    };
+
+    handleWechatCallback();
+  }, [setInitialState]);
+
+  // 处理支付宝登录回调
+  useEffect(() => {
+    const handleAlipayCallback = async () => {
+      if (isAlipayLoginCallback()) {
+        try {
+          message.loading('正在处理支付宝登录...', 0);
+          
+          const alipayData = await handleAlipayLoginCallback();
+          if (alipayData) {
+            // 调用后端支付宝登录接口
+            const response = await alipayLogin({
+              authCode: alipayData.authCode,
+              state: alipayData.state,
+            });
+
+            if (response.token) {
+              localStorage.setItem('token', response.token);
+              localStorage.setItem('userId', response.id?.toString() || '');
+              localStorage.setItem('userRole', response.role || '');
+            }
+
+            setUserLoginState({
+              status: 'ok',
+              type: 'alipay',
+              token: response.token,
+              id: response.id,
+              username: response.username || '支付宝用户',
+              role: response.role
+            });
+
+            flushSync(() => {
+              setInitialState((s) => ({
+                ...s,
+                currentUser: {
+                  name: response.username || '支付宝用户',
+                  avatar: 'https://breed-1258140596.cos.ap-shanghai.myqcloud.com/%E7%A7%8D%E8%B4%A5%E8%B5%84%E6%BA%90/tx.png',
+                  userid: response.id?.toString() || '00000004',
+                  email: 'alipay@example.com',
+                  signature: '专注种植，用心培育',
+                  title: '种植专家',
+                  group: '育种平台－开发部门',
+                  tags: [
+                    {
+                      key: '0',
+                      label: '种植达人',
+                    },
+                  ],
+                  notifyCount: 5,
+                  unreadCount: 3,
+                  country: 'China',
+                  access: response.role || 'user',
+                  geographic: {
+                    province: {
+                      label: '浙江省',
+                      key: '330000',
+                    },
+                    city: {
+                      label: '湖州市',
+                      key: '330500',
+                    },
+                  },
+                  address: '湖州市吴兴区',
+                  phone: '0572-12345678',
+                },
+              }));
+            });
+
+            message.destroy();
+            message.success('支付宝登录成功！');
+
+            const urlParams = new URL(window.location.href).searchParams;
+            history.push(urlParams.get('redirect') || '/');
+          } else {
+            message.destroy();
+            message.error('支付宝登录失败，请重试');
+          }
+        } catch (error: any) {
+          message.destroy();
+          message.error('支付宝登录失败：' + (error.message || '未知错误'));
+        }
+      }
+    };
+
+    handleAlipayCallback();
+  }, [setInitialState]);
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {

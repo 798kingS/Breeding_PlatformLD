@@ -23,6 +23,7 @@ export default {
   'pages.login.loginWith': '其他登录方式 :',
   'pages.login.registerAccount': '注册账户',
   'pages.login.register': '注册新账户',
+  'pages.login.unauthorized': '用户名或密码错误',
   // 注册页面相关翻译
   'pages.register.cancel': '取消',
   'pages.register.submit': '注册',
@@ -81,5 +82,5 @@ export default {
   'pages.searchTable.tenThousand': '万',
   'pages.searchTable.batchDeletion': '批量删除',
   'pages.searchTable.batchApproval': '批量审批',
-  'pages.searchTable.ku':'种质资源库'
+  'pages.searchTable.ku':'种质资源库',
 };

@@ -712,7 +712,7 @@ const TableList: React.FC = () => {
         },
         body: JSON.stringify(newHybrid),
       });
-      console.log(JSON.stringify(newHybrid))
+      // console.log(JSON.stringify(newHybrid))
       const result = await response.json();
       if (result.msg || result.code === 200) {
         message.success('已添加到杂交配组表');
@@ -1184,9 +1184,10 @@ const TableList: React.FC = () => {
             // console.log('Add seed response:', result);
 
             if (result && (result.msg === 'SUCCESS' || result.code === 200 || result.success)) {
-              message.success('添加成功');
+              // message.success('添加成功');
               await fetchTableData();
               handleModalOpen(false);
+              message.success('添加成功');
               if (actionRef.current) actionRef.current.reload();
               return true;
             } else {
@@ -1740,7 +1741,7 @@ const TableList: React.FC = () => {
         }}
         confirmLoading={uploading}
         width={600}
-        bodyStyle={{ padding: '24px' }}
+        styles={{ body: { padding: '24px' } }}
       >
         <div style={{ background: '#fafafa', padding: '24px', borderRadius: '8px', marginBottom: '24px' }}>
           <Upload
@@ -1787,7 +1788,7 @@ const TableList: React.FC = () => {
         open={hybridModalOpen}
         onCancel={() => setHybridModalOpen(false)}
         width={1200}
-        bodyStyle={{ padding: '24px', maxHeight: '80vh', overflow: 'auto' }}
+        styles={{ body: { padding: '24px', maxHeight: '80vh', overflow: 'auto' } }}
         footer={[
           <Button key="cancel" onClick={() => setHybridModalOpen(false)}>
             关闭
@@ -1967,7 +1968,7 @@ const TableList: React.FC = () => {
         }}
         footer={sowingModalFooter}
         width={900}
-        bodyStyle={{ padding: '24px', maxHeight: '80vh', overflow: 'auto' }}
+        styles={{ body: { padding: '24px', maxHeight: '80vh', overflow: 'auto' } }}
       >
         <div style={{ background: '#fafafa', padding: '24px', borderRadius: '8px', marginBottom: '24px' }}>
           <Form

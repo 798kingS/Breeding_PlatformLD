@@ -151,10 +151,6 @@ export async function importExcel(formData: FormData) {
     data: API.RuleListItem[]; // 返回的数据类型为API.RuleListItem数组
     success: boolean; // 返回的成功状态
     message?: string; // 返回的消息
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'Authorization': `Bearer ${token}`// 手动设置请求头
-    },
   }>('/api/seed/Seedimport', {
     method: 'POST',
     data: formData,
@@ -372,4 +368,52 @@ export async function imageOcr(file: File) {
     console.error('OCR识别失败:', error);
     throw error;
   }
+}
+
+/** QQ登录接口 */
+export async function qqLogin(body: {
+  accessToken: string;
+  openId: string;
+  [key: string]: any;
+}, options?: { [key: string]: any }) {
+  return request<API.LoginResult>('/api/auth/qq-login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 微信登录接口 */
+export async function wechatLogin(body: {
+  code: string;
+  state?: string;
+  [key: string]: any;
+}, options?: { [key: string]: any }) {
+  return request<API.LoginResult>('/api/auth/wechat-login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 支付宝登录接口 */
+export async function alipayLogin(body: {
+  authCode: string;
+  state?: string;
+  [key: string]: any;
+}, options?: { [key: string]: any }) {
+  return request<API.LoginResult>('/api/auth/alipay-login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
 }
